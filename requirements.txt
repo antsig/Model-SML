@@ -7,3 +7,5 @@ xgboost
 fastapi
 uvicorn
 prometheus-client
+dagshub
+setuptools<70.0

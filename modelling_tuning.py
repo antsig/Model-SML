@@ -29,8 +29,8 @@ def main():
     X_test = test_df.drop('species', axis=1)
     y_test = test_df['species']
 
-    # manual logging
-    mlflow.autolog(disable=True)
+    # Mengaktifkan autolog (termasuk parameter dan metrik default scikit-learn)
+    mlflow.sklearn.autolog()
     
     mlflow.set_experiment("SML_Submission_Tuning")
 
@@ -51,14 +51,12 @@ def main():
         preds = best_model.predict(X_test)
         acc = accuracy_score(y_test, preds)
         
-        # 3. Manual Logging: Parameters & Metrics
-        mlflow.log_params(grid_search.best_params_)
-        mlflow.log_metric("accuracy", acc)
+        # 3. Manual Logging: Metrik tambahan uji set dan Artefak
+        # Autolog menangani model log, parameter train, dan cross-validation
+        # Kita melog manual test_accuracy dan 2 confusion matrix artifacts
+        mlflow.log_metric("test_accuracy", acc)
         
-        # 4. Manual Logging: Model
-        mlflow.sklearn.log_model(best_model, "random_forest_model")
-        
-        # 5. Artefak Tambahan 1: Confusion Matrix Plot
+        # 4. Artefak Tambahan 1: Confusion Matrix Plot
         cm = confusion_matrix(y_test, preds)
         plt.figure(figsize=(8,6))
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
@@ -68,8 +66,9 @@ def main():
         cm_path = "confusion_matrix.png"
         plt.savefig(cm_path)
         mlflow.log_artifact(cm_path)
+        plt.close() # Best practice: menutup plot agar tidak membebani memori
         
-        # 6. Artefak Tambahan 2: Feature Importance
+        # 5. Artefak Tambahan 2: Feature Importance
         feature_importance = pd.DataFrame({
             'feature': X_train.columns,
             'importance': best_model.feature_importances_
@@ -77,6 +76,19 @@ def main():
         fi_path = "feature_importance.csv"
         feature_importance.to_csv(fi_path, index=False)
         mlflow.log_artifact(fi_path)
+        
+        # 6. Artefak Tambahan 3 & Manual Metric: Classification Report
+        report_dict = classification_report(y_test, preds, output_dict=True)
+        report_str = classification_report(y_test, preds)
+        
+        # Log beberapa metrik manual (Macro Avg) sebagai best practice 
+        mlflow.log_metric("macro_f1_score", report_dict['macro avg']['f1-score'])
+        mlflow.log_metric("macro_precision", report_dict['macro avg']['precision'])
+        
+        report_path = "classification_report.txt"
+        with open(report_path, "w") as f:
+            f.write(report_str)
+        mlflow.log_artifact(report_path)
         
         print(f"Tuning selesai. Best Accuracy: {acc}")
         print(f"Best Params: {grid_search.best_params_}")
