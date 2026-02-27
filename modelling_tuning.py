@@ -8,15 +8,13 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 from sklearn.model_selection import GridSearchCV
 import os
 
-# Set DagsHub Tracking URI
-import dagshub
-dagshub.init(repo_owner='antsig',
-             repo_name='Model-SML',
-             mlflow=True)
-
-mlflow.set_tracking_uri("https://dagshub.com/antsig/Model-SML.mlflow")
-
 def main():
+    import dagshub
+    dagshub.init(repo_owner='antsig',
+                 repo_name='Model-SML',
+                 mlflow=True)
+
+    mlflow.set_tracking_uri("https://dagshub.com/antsig/Model-SML.mlflow")
     try:
         train_df = pd.read_csv('iris_preprocessing/train.csv')
         test_df = pd.read_csv('iris_preprocessing/test.csv')

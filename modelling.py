@@ -5,12 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 def main():
-    import dagshub
-    dagshub.init(repo_owner='antsig',
-                 repo_name='Model-SML',
-                 mlflow=True)
-
-    mlflow.set_tracking_uri("https://dagshub.com/antsig/Model-SML.mlflow")
+    mlflow.set_tracking_uri("http://localhost:5000")
 
     try:
         train_df = pd.read_csv('iris_preprocessing/train.csv')
