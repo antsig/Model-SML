@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.model_selection import GridSearchCV
 import os
 
@@ -29,9 +29,6 @@ def main():
     X_test = test_df.drop('species', axis=1)
     y_test = test_df['species']
 
-    # Mengaktifkan autolog (termasuk parameter dan metrik default scikit-learn)
-    mlflow.sklearn.autolog()
-    
     mlflow.set_experiment("SML_Submission_Tuning")
 
     with mlflow.start_run(run_name="Tuning_RandomForest"):
@@ -50,10 +47,12 @@ def main():
         # 2. Prediction & Metrics
         preds = best_model.predict(X_test)
         acc = accuracy_score(y_test, preds)
+
+        # 2.5 Manual Logging: Parameters and Model (replacing autolog)
+        mlflow.log_params(grid_search.best_params_)
+        mlflow.sklearn.log_model(best_model, "tuned_rf_model")
         
         # 3. Manual Logging: Metrik tambahan uji set dan Artefak
-        # Autolog menangani model log, parameter train, dan cross-validation
-        # Kita melog manual test_accuracy dan 2 confusion matrix artifacts
         mlflow.log_metric("test_accuracy", acc)
         
         # 4. Artefak Tambahan 1: Confusion Matrix Plot
