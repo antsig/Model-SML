@@ -16,16 +16,16 @@ def main():
 
     mlflow.set_tracking_uri("https://dagshub.com/antsig/Model-SML.mlflow")
     try:
-        train_df = pd.read_csv('iris_preprocessing/train.csv')
-        test_df = pd.read_csv('iris_preprocessing/test.csv')
+        train_df = pd.read_csv('breast_cancer_preprocessing/train.csv')
+        test_df = pd.read_csv('breast_cancer_preprocessing/test.csv')
     except Exception as e:
         print("Data tidak ditemukan.")
         return
 
-    X_train = train_df.drop('species', axis=1)
-    y_train = train_df['species']
-    X_test = test_df.drop('species', axis=1)
-    y_test = test_df['species']
+    X_train = train_df.drop('target', axis=1)
+    y_train = train_df['target']
+    X_test = test_df.drop('target', axis=1)
+    y_test = test_df['target']
 
     mlflow.set_experiment("SML_Submission_Tuning")
 

@@ -8,16 +8,16 @@ def main():
     mlflow.set_tracking_uri("http://localhost:5000")
 
     try:
-        train_df = pd.read_csv('iris_preprocessing/train.csv')
-        test_df = pd.read_csv('iris_preprocessing/test.csv')
+        train_df = pd.read_csv('breast_cancer_preprocessing/train.csv')
+        test_df = pd.read_csv('breast_cancer_preprocessing/test.csv')
     except Exception as e:
-        print("Data tidak ditemukan di folder 'iris_preprocessing'. Pastikan dataset sudah disiapkan dari kriteria sebelumnya.")
+        print("Data tidak ditemukan di folder 'breast_cancer_preprocessing'. Pastikan dataset sudah disiapkan dari kriteria sebelumnya.")
         return
 
-    X_train = train_df.drop('species', axis=1)
-    y_train = train_df['species']
-    X_test = test_df.drop('species', axis=1)
-    y_test = test_df['species']
+    X_train = train_df.drop('target', axis=1)
+    y_train = train_df['target']
+    X_test = test_df.drop('target', axis=1)
+    y_test = test_df['target']
 
     mlflow.set_experiment("SML_Submission_Baseline")
     mlflow.sklearn.autolog()
